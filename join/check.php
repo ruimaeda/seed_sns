@@ -78,7 +78,7 @@ session_start();
                 <tr>
                   <td><div class="text-center">プロフィール画像</div></td>
                   <?php if(isset($_SESSION['join']['picture_path'])): ?>
-                    <td><div class="text-center"><?php echo '<img src=\"../member_picture/' . $_SESSION['join']['picture_path'] . '\">'; ?></div></td>
+                    <td><div class="text-center"><?php echo '<img src="../member_picture/' . $_SESSION['join']['picture_path'] . ' " ' . 'width="100" height="100">'; ?></div></td>
                   <?php else: ?>
                     <td><div class="text-center"><img src="http://c85c7a.medialib.glogster.com/taniaarca/media/71/71c8671f98761a43f6f50a282e20f0b82bdb1f8c/blog-images-1349202732-fondo-steve-jobs-ipad.jpg" width="100" height="100"></div></td>
                   <?php endif; ?>
