@@ -1,12 +1,31 @@
 <?php
   session_start();
+
   $nick_name = htmlspecialchars($_SESSION['join']['nick_name'], ENT_QUOTES, 'UTF-8');
   $email = htmlspecialchars($_SESSION['join']['email'], ENT_QUOTES, 'UTF-8');
   $picture_path = htmlspecialchars($_SESSION['join']['picture_path'], ENT_QUOTES, 'UTF-8');
 
+  //dbconnect.phpを読み込む
+  require('../dbconnect.php');
+
   //セッションにデータがなかったらindex.phpに移動する
   if(!isset($_SESSION['join'])) {
     header('Location: index.php');
+    exit();
+  }
+
+  //DB登録処理
+  if (!empty($_POST)){
+    $sql = sprintf('INSERT INTO `members`(`nick_name`, `email`, `password`, `picture_path`, `created`, `modified`) VALUES ("%s","%s","%s","%s", now(), now());',
+      mysqli_real_escape_string($db,$_SESSION['join']['nick_name']),
+      mysqli_real_escape_string($db,$_SESSION['join']['email']),
+      mysqli_real_escape_string($db,$_SESSION['join']['password']),
+      mysqli_real_escape_string($db,$_SESSION['join']['picture_path'])
+      );
+
+    //SQL文を実行する処理
+    mysqli_query($db,$sql) or die(mysqli_error($db));
+    header("location: thanks.php");
     exit();
   }
 
@@ -95,7 +114,7 @@
               </tbody>
             </table>
 
-            <a href="index.html">&laquo;&nbsp;書き直す</a> |
+            <a href="index.php?action=rewrite">&laquo;&nbsp;書き直す</a> |
             <input type="submit" class="btn btn-default" value="会員登録">
           </div>
         </form>

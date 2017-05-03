@@ -49,6 +49,12 @@ if (!empty($_POST)) {
   }
 }
 
+  //書き直しの処理
+  if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'rewrite'){
+  	$_POST = $_SESSION['join'];
+  	$error['rewrite'] = true;
+  }
+
 ?>
 
 <!DOCTYPE html>
