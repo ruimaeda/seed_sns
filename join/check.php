@@ -1,5 +1,14 @@
 <?php
-session_start();
+  session_start();
+  $nick_name = htmlspecialchars($_SESSION['join']['nick_name'], ENT_QUOTES, 'UTF-8');
+  $email = htmlspecialchars($_SESSION['join']['email'], ENT_QUOTES, 'UTF-8');
+  $picture_path = htmlspecialchars($_SESSION['join']['picture_path'], ENT_QUOTES, 'UTF-8');
+
+  //セッションにデータがなかったらindex.phpに移動する
+  if(!isset($_SESSION['join'])) {
+    header('Location: index.php');
+    exit();
+  }
 
 ?>
 

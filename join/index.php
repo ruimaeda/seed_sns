@@ -145,9 +145,12 @@ if (!empty($_POST)) {
             <label class="col-sm-4 control-label">プロフィール写真</label>
             <div class="col-sm-8">
               <input type="file" name="picture_path" class="form-control">
-              	<?php if(isset($error['picture_path']) && $error['picture_path'] == 'type'){ ?>
+              	<?php if(isset($error['picture_path']) && $error['picture_path'] == 'type'): ?>
               	  <p class="error">写真は.gifか.jpgか.pngで指定してください(๑•̀ㅂ•́)و✧</p>
-              	<?php } ?>
+              	<?php endif; ?>
+              	<?php if (!empty($error)): ?>
+              	  <p class="error">画像を改めて指定してください</p>
+              	<?php endif; ?>
             </div>
           </div>
 
