@@ -19,7 +19,7 @@
     $sql = sprintf('INSERT INTO `members`(`nick_name`, `email`, `password`, `picture_path`, `created`, `modified`) VALUES ("%s","%s","%s","%s", now(), now());',
       mysqli_real_escape_string($db,$_SESSION['join']['nick_name']),
       mysqli_real_escape_string($db,$_SESSION['join']['email']),
-      mysqli_real_escape_string($db,$_SESSION['join']['password']),
+      mysqli_real_escape_string($db,sha1($_SESSION['join']['password'])),
       mysqli_real_escape_string($db,$_SESSION['join']['picture_path'])
       );
 
