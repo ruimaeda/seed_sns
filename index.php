@@ -70,7 +70,14 @@
     $record = mysqli_query($db,$sql) or die(mysqli_error($db));
     $member = mysqli_fetch_assoc($record);
 
-    //$nick_name = $stmt->fetch(PDO::FETCH_ASSOC);
+    //2-3. SELECT文を実行する（データベースから投稿内容を引き出す）
+    $sql = sprintf('SELECT `members`.`nick_name`,`members`.`picture_path`,`tweets`.* FROM `tweets` INNER JOIN `members` on `tweets`.`member_id` = `members`.`member_id` ORDER BY `created` DESC'
+      );
+    $tweets = mysqli_query($db,$sql) or die(mysqli_error($db));
+    $tweets_array = array();
+    while ($tweet = mysqli_fetch_assoc($tweets)) {
+      $tweets_array[] = $tweet;
+    }
 
     //繰り返し文でデータの取得（フェッチ）
     //while (1) {
@@ -154,20 +161,25 @@
       </div>
 
       <div class="col-md-8 content-margin-top">
+      <!-- tweet内容を繰り返し表示する -->
+      <?php foreach ($tweets_array as $tweet_each) { ?>
         <div class="msg">
-          <img src="http://c85c7a.medialib.glogster.com/taniaarca/media/71/71c8671f98761a43f6f50a282e20f0b82bdb1f8c/blog-images-1349202732-fondo-steve-jobs-ipad.jpg" width="48" height="48">
+          <img src="member_picture/<?php echo $tweet_each['picture_path']?>" width="48" height="48">
           <p>
-            つぶやき４<span class="name"> (Seed kun) </span>
+            <?php echo $tweet_each['tweet']; ?> <span class="name"><?php echo $tweet_each['nick_name']; ?></span>
             [<a href="#">Re</a>]
           </p>
           <p class="day">
             <a href="view.html">
-              2016-01-28 18:04
+              <?php echo $tweet_each['created']; ?>
             </a>
             [<a href="#" style="color: #00994C;">編集</a>]
             [<a href="#" style="color: #F33;">削除</a>]
           </p>
         </div>
+      <?php } ?>
+
+
         <div class="msg">
           <img src="http://c85c7a.medialib.glogster.com/taniaarca/media/71/71c8671f98761a43f6f50a282e20f0b82bdb1f8c/blog-images-1349202732-fondo-steve-jobs-ipad.jpg" width="48" height="48">
           <p>
