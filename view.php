@@ -23,7 +23,7 @@
 
   //つぶやきを表示するSLECT文を実行する
   $sql = sprintf('SELECT `members`.`nick_name`,`members`.`picture_path`,`tweets`.* FROM `tweets` INNER JOIN `members` on `tweets`.`member_id` = `members`.`member_id` WHERE `tweet_id` = "%d"',
-    mysqli_real_escape_string($db,$_REQUEST['res'])
+    mysqli_real_escape_string($db,$_REQUEST['tweet_id'])
     );
   $tweets = mysqli_query($db,$sql) or die(mysqli_error($db));
   $tweet_view = mysqli_fetch_assoc($tweets);
