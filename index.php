@@ -79,20 +79,22 @@
       $tweets_array[] = $tweet;
     }
 
-    //繰り返し文でデータの取得（フェッチ）
-    //while (1) {
-      //実はFETCHの段階で、createdが文字列型に設定されている
-      //$rec = $stmt->fetch(PDO::FETCH_ASSOC);
-      //if ($rec == false) {
-        //break;
-      //}
+    //返信の場合
+    if (isset($_REQUEST['res'])){
+      //返信元のデータ（つぶやきとニックネーム）を取得する
+      $sql = sprintf('SELECT `members`.`nick_name`,`tweets`.`tweet` FROM `tweets` INNER JOIN `members` on `tweets`.`member_id` = `members`.`member_id` WHERE `tweet_id` = "%d"',
+        mysqli_real_escape_string($db,$_REQUEST['res'])
+      );
 
-      //配列posts_datasに投稿ごとのデータを代入する
-      //$post_datas[] = $rec;
-     //}
+      //$_REQUESTは
 
-    //3. データベースを切断する
-    //$dbh = null;
+      $reply = mysqli_query($db,$sql) or die(mysqli_error($db));
+      $reply_table = mysqli_fetch_assoc($reply);
+
+      //[@ニックネーム つぶやき]という文字列を入力欄にセットする
+      $reply_post = '@'.$reply_table['nick_name'].' '.$reply_table['tweet'];
+    }
+
 
 ?>
 
@@ -147,7 +149,13 @@
             <div class="form-group">
               <label class="col-sm-4 control-label">つぶやき</label>
               <div class="col-sm-8">
-                <textarea name="tweet" cols="50" rows="5" class="form-control" placeholder="例：Hello World!"></textarea>
+                <?php if(isset($reply_post)){ ?>
+                  <textarea name="tweet" cols="50" rows="5" class="form-control" placeholder="例：Hello World!"><?php echo $reply_post; ?></textarea>
+                  <!-- valueの中身を確認する-->
+                  <input type="hidden" name="reply_tweet_id" value="<?php echo $_REQUEST['res']; ?>">
+                <?php }else{ ?>
+                  <textarea name="tweet" cols="50" rows="5" class="form-control" placeholder="例：Hello World!"></textarea>
+                <?php } ?>
               </div>
             </div>
           <ul class="paging">
@@ -164,13 +172,13 @@
       <!-- tweet内容を繰り返し表示する -->
       <?php foreach ($tweets_array as $tweet_each) { ?>
         <div class="msg">
-          <img src="member_picture/<?php echo $tweet_each['picture_path']?>" width="48" height="48">
+          <img src="member_picture/<?php echo $tweet_each['picture_path']; ?>" width="48" height="48">
           <p>
-            <?php echo $tweet_each['tweet']; ?> <span class="name"><?php echo $tweet_each['nick_name']; ?></span>
-            [<a href="#">Re</a>]
+            <?php echo $tweet_each['tweet']; ?> <span class="name">（<?php echo $tweet_each['nick_name']; ?>）</span>
+            [<a href="index.php?res=<?php echo $tweet_each['tweet_id']; ?>">Re</a>]
           </p>
           <p class="day">
-            <a href="view.html">
+            <a href="view.php?res=<?php echo $tweet_each['tweet_id']; ?>">
               <?php echo $tweet_each['created']; ?>
             </a>
             [<a href="#" style="color: #00994C;">編集</a>]

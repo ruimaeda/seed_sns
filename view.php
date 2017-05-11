@@ -1,3 +1,36 @@
+<?php
+  //Sessionをスタートする
+  session_start();
+
+  //ログイン状態をチェックする→強制ログアウトを作る
+  //ログインしていると判断できる条件
+  // 1.セッションにidが入っていること
+  // 2.最後の行動から1時間以内であること
+  if(isset($_SESSION['login_member_id']) && ($_SESSION['time'] + 3600 > time()) ){
+    //ログインしている and 最後の行動から1時間以内
+    //セッションの時間を更新
+    $_SESSION['time'] = time();
+
+  } else {
+    //ログインしていない or 最後の行動から1時間以上経った
+    header('Location: login.php');
+    exit();
+
+  }
+
+  //データベースに接続する
+  require('dbconnect.php');
+
+  //つぶやきを表示するSLECT文を実行する
+  $sql = sprintf('SELECT `members`.`nick_name`,`members`.`picture_path`,`tweets`.* FROM `tweets` INNER JOIN `members` on `tweets`.`member_id` = `members`.`member_id` WHERE `tweet_id` = "%d"',
+    mysqli_real_escape_string($db,$_REQUEST['res'])
+    );
+  $tweets = mysqli_query($db,$sql) or die(mysqli_error($db));
+  $tweet_view = mysqli_fetch_assoc($tweets);
+
+?>
+
+
 <!DOCTYPE html>
 <html lang="ja">
   <head>
@@ -38,6 +71,26 @@
       </div>
       <!-- /.container-fluid -->
   </nav>
+
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4 col-md-offset-4 content-margin-top">
+        <div class="msg">
+         <img src="member_picture/<?php echo $tweet_view['picture_path']; ?>" width="100" height="100">
+          <p>投稿者 : <span class="name"> <?php echo $tweet_view['nick_name'] ?> </span></p>
+          <p>
+            つぶやき : <br>
+            <?php echo $tweet_view['tweet'] ?>
+          </p>
+          <p class="day">
+            <?php echo $tweet_view['created'] ?>
+            [<a href="#" style="color: #F33;">削除</a>]
+          </p>
+        </div>
+        <a href="index.html">&laquo;&nbsp;一覧へ戻る</a>
+      </div>
+    </div>
+  </div>
 
   <div class="container">
     <div class="row">
