@@ -28,15 +28,21 @@
   $tweets = mysqli_query($db,$sql) or die(mysqli_error($db));
   $tweet = mysqli_fetch_assoc($tweets);
 
+  //つぶやきを保存するUPDATEを作って、実行して、indexに戻る
   //保存ボタンが押されたことの確認
-  if(isset($_POST))
-    //つぶやきを保存するUPDATEを作って、実行して、indexに戻る
-    $sql = 'UPDATE `tweets` SET `delete_flag` = 1 WHERE `tweet_id` = '.$_REQUEST['tweet_id'];
+  if(isset($_POST) && !empty($_POST['tweet'])){
+
+    //SQLの実行
+    $sql = sprintf('UPDATE `tweets` SET `tweet` = "%s" WHERE `tweet_id` = %d',
+    mysqli_real_escape_string($db,$_POST['tweet']),
+    mysqli_real_escape_string($db,$_POST['tweet_id'])
+    );
+
     mysqli_query($db,$sql) or die(mysqli_error($db));
 
     header("location: index.php");
     exit();
-
+  }
 
 ?>
 
@@ -87,16 +93,16 @@
       <div class="col-md-4 col-md-offset-4 content-margin-top">
         <div class="msg">
          <img src="member_picture/<?php echo $tweet['picture_path']; ?>" width="100" height="100">
-          <p>投稿者 : <span class="name"> <?php echo $tweet['nick_name'] ?> </span></p>
+          <p>投稿者 : <span class="name"><?php echo $tweet['nick_name']; ?></span></p>
           <p>
             つぶやき : <br>
-            <?php echo $tweet['tweet'] ?>
+            <form method="post" action="" class="form-horizontal" role="form">
+            <textarea name="tweet" cols="50" rows="5" class="form-control" placeholder="例：Hello World!"><?php echo $tweet['tweet']; ?></textarea>
+            <input type="hidden" name="tweet_id" value="<?php echo $tweet['tweet_id']; ?>">
+            <input type="submit" class="btn btn-info" value="保存">
           </p>
           <p class="day">
-            <?php echo $tweet['created'] ?>
-            <?php if ($_SESSION['login_member_id'] == $tweet['member_id']) { ?>
-            [<a href="delete.php?tweet_id=<?php echo $tweet['tweet_id']; ?>" style="color: #F33;">削除</a>]
-            <?php } ?>
+            <!-- ここにはdayが入る-->
           </p>
         </div>
         <a href="index.html">&laquo;&nbsp;一覧へ戻る</a>
