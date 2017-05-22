@@ -88,7 +88,14 @@
     //2.必要なページ数を計算
     //2-1. 1ページに表示する行数の決定
     $row = 5;
+    if (isset($_GET['search_word']) && !empty($_GET['search_word'])){
+    $sql = sprintf('SELECT COUNT(*) as cnt FROM `tweets` INNER JOIN `members` on `tweets`.`member_id` = `members`.`member_id` WHERE `delete_flag` = 0 AND `tweet` LIKE "%%%s%%" ORDER BY `tweets`.`created` DESC',
+      mysqli_real_escape_string($db,$_GET['search_word'])
+    );
+
+    }else{
     $sql = 'SELECT COUNT(*) as cnt FROM `tweets` INNER JOIN `members` on `tweets`.`member_id` = `members`.`member_id` WHERE `delete_flag` = 0 ORDER BY `tweets`.`created` DESC';
+    }
 
     $record_cnt = mysqli_query($db, $sql) or die(mysqli_error($db));
     $table_cnt = mysqli_fetch_assoc($record_cnt);
@@ -112,11 +119,24 @@
     $record = mysqli_query($db,$sql) or die(mysqli_error($db));
     $member = mysqli_fetch_assoc($record);
 
-    //2-3. SELECT文を実行する（データベースから投稿内容を引き出す）
+    //2-3-1. 検索された場合、検索結果のtweet一覧を表示する処理
+    if (isset($_GET['search_word']) && !empty($_GET['search_word'])){
+    $sql = sprintf('SELECT `members`.`nick_name`,`members`.`picture_path`,`tweets`.* FROM `tweets` INNER JOIN `members` on `tweets`.`member_id` = `members`.`member_id` WHERE `delete_flag`=0 AND `tweet` LIKE "%%%s%%" ORDER BY `created` DESC LIMIT %d,%d',
+      mysqli_real_escape_string($db,$_GET['search_word']),
+      $start,
+      $row
+      );
+
+    }else{
+
+    //2-3-2. 検索されていない場合のtweet一覧を表示する処理 / SELECT文を実行する（データベースから投稿内容を引き出す）
     $sql = sprintf('SELECT `members`.`nick_name`,`members`.`picture_path`,`tweets`.* FROM `tweets` INNER JOIN `members` on `tweets`.`member_id` = `members`.`member_id` WHERE `delete_flag`=0 ORDER BY `created` DESC LIMIT %d,%d',
       $start,
       $row
       );
+
+    }
+
     $tweets = mysqli_query($db,$sql) or die(mysqli_error($db));
     $tweets_array = array();
     while ($tweet = mysqli_fetch_assoc($tweets)) {
@@ -213,9 +233,17 @@
           <ul class="paging">
             <input type="submit" class="btn btn-info" value="つぶやく">
                 &nbsp;&nbsp;&nbsp;&nbsp;
+                <!-- -->
+                <?php
+                  $word='';
+                  if(isset($_GET['search_word']) && !empty($_GET['search_word'])){
+                    $word = '&search_word='.$_GET['search_word'];
+                  }
+                ?>
+
                 <li>
                 <?php if ($page > 1) { ?>
-                <a href="index.php?page=<?php echo $page-1; ?>" class="btn btn-default">前</a>
+                <a href="index.php?page=<?php echo $page-1; ?><?php echo $word; ?>" class="btn btn-default">前</a>
                 <?php }else{ ?>
                 前
                 <?php } ?>
@@ -224,7 +252,7 @@
                 &nbsp;&nbsp;|&nbsp;&nbsp;
                 <li>
                 <?php if ($page < $maxPage) { ?>
-                <a href="index.php?page=<?php echo $page+1; ?>" class="btn btn-default">次</a></li>
+                <a href="index.php?page=<?php echo $page+1; ?><?php echo $word; ?>" class="btn btn-default">次</a></li>
                 <?php }else{ ?>
                 次
                 <?php } ?>
@@ -264,50 +292,6 @@
           </p>
         </div>
       <?php } ?>
-
-
-        <div class="msg">
-          <img src="http://c85c7a.medialib.glogster.com/taniaarca/media/71/71c8671f98761a43f6f50a282e20f0b82bdb1f8c/blog-images-1349202732-fondo-steve-jobs-ipad.jpg" width="48" height="48">
-          <p>
-            つぶやき３<span class="name"> (Seed kun) </span>
-            [<a href="#">Re</a>]
-          </p>
-          <p class="day">
-            <a href="view.html">
-              2016-01-28 18:03
-            </a>
-            [<a href="#" style="color: #00994C;">編集</a>]
-            [<a href="#" style="color: #F33;">削除</a>]
-          </p>
-        </div>
-        <div class="msg">
-          <img src="http://c85c7a.medialib.glogster.com/taniaarca/media/71/71c8671f98761a43f6f50a282e20f0b82bdb1f8c/blog-images-1349202732-fondo-steve-jobs-ipad.jpg" width="48" height="48">
-          <p>
-            つぶやき２<span class="name"> (Seed kun) </span>
-            [<a href="#">Re</a>]
-          </p>
-          <p class="day">
-            <a href="view.html">
-              2016-01-28 18:02
-            </a>
-            [<a href="#" style="color: #00994C;">編集</a>]
-            [<a href="#" style="color: #F33;">削除</a>]
-          </p>
-        </div>
-        <div class="msg">
-          <img src="http://c85c7a.medialib.glogster.com/taniaarca/media/71/71c8671f98761a43f6f50a282e20f0b82bdb1f8c/blog-images-1349202732-fondo-steve-jobs-ipad.jpg" width="48" height="48">
-          <p>
-            つぶやき１<span class="name"> (Seed kun) </span>
-            [<a href="#">Re</a>]
-          </p>
-          <p class="day">
-            <a href="view.html">
-              2016-01-28 18:01
-            </a>
-            [<a href="#" style="color: #00994C;">編集</a>]
-            [<a href="#" style="color: #F33;">削除</a>]
-          </p>
-        </div>
       </div>
 
     </div>

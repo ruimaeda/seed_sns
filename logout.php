@@ -1,4 +1,6 @@
 <?php
+    //Sessionをスタートする
+    session_start();
 
     //セッション変数の中身を空にする（上書きする）
     $_SESSION = array();

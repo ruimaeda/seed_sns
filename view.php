@@ -28,15 +28,6 @@
   $tweets = mysqli_query($db,$sql) or die(mysqli_error($db));
   $tweet = mysqli_fetch_assoc($tweets);
 
-  //保存ボタンが押されたことの確認
-  if(isset($_POST))
-    //つぶやきを保存するUPDATEを作って、実行して、indexに戻る
-    $sql = 'UPDATE `tweets` SET `delete_flag` = 1 WHERE `tweet_id` = '.$_REQUEST['tweet_id'];
-    mysqli_query($db,$sql) or die(mysqli_error($db));
-
-    header("location: index.php");
-    exit();
-
 
 ?>
 
