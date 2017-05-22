@@ -1,7 +1,7 @@
 <?php
 
     // 連想配列
-    $country = array('coutry_name' => 'japan', 'language' => 'japanese');
+    $country = array('country_name' => 'japan', 'language' => 'japanese');
     // 二次元配列
     $region = array($country);
     // 三次元配列
@@ -11,6 +11,6 @@
     // 五次元配列
     $space = array($solar_system);
 
-    echo $jump[0][0][0][0]['name'];
+    echo $space[0][0][0][0]['country_name'];
 
 ?>
