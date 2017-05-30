@@ -1,0 +1,21 @@
+{
+    "name": "louis",
+    "age": "29",
+    "gender": "male",
+    "skills": [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        {
+            "PHP": [
+                "オブジェクト指向",
+                "JSON/API"
+            ]
+        }
+    ],
+    "hobby": [
+        "tennis",
+        "soccer",
+        "baseball"
+    ]
+}
