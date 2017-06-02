@@ -140,8 +140,35 @@
     $tweets = mysqli_query($db,$sql) or die(mysqli_error($db));
     $tweets_array = array();
     while ($tweet = mysqli_fetch_assoc($tweets)) {
+      //$tweetにはtweet['tweet_id']が含まれている（いいね機能の実装のための処理、login_member_idを元に、どのtweetにいいねしているか判別）
+      $sql = 'SELECT COUNT(*) as `like_flag` FROM `likes` WHERE `tweet_id` = ' . $tweet['tweet_id'] . ' AND `member_id` = ' . $_SESSION['login_member_id'];
+
+      //SQLを実行
+      $likes = mysqli_query($db,$sql) or die(mysqli_error($db));
+      $like = mysqli_fetch_assoc($likes);
+
+      //いいね数の取得
+      $sql = 'SELECT COUNT(*) as `like_count` FROM `likes` WHERE `tweet_id`='.$tweet['tweet_id'];
+      $likes_cnt = mysqli_query($db,$sql) or die(mysqli_error($db));
+      $like_cnt = mysqli_fetch_assoc($likes_cnt);
+
+      // echo '<pre>';
+      // var_dump('記事のID');
+      // var_dump($tweet['tweet_id']);
+
+      // var_dump('いいねの数');
+      // var_dump($like);
+      // echo '</pre>';
+
+      $tweet['like_flag'] = $like['like_flag'];
+      $tweet['like_count'] = $like_cnt['like_count'];
+
       $tweets_array[] = $tweet;
     }
+
+    // echo '<pre>';
+    // var_dump($tweets_array);
+    // echo '</pre>';
 
     //返信の場合
     if (isset($_REQUEST['res'])){
@@ -189,28 +216,7 @@
 
   </head>
   <body>
-  <nav class="navbar navbar-default navbar-fixed-top">
-      <div class="container">
-          <!-- Brand and toggle get grouped for better mobile display -->
-          <div class="navbar-header page-scroll">
-              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-                  <span class="sr-only">Toggle navigation</span>
-                  <span class="icon-bar"></span>
-                  <span class="icon-bar"></span>
-                  <span class="icon-bar"></span>
-              </button>
-              <a class="navbar-brand" href="index.html"><span class="strong-title"><i class="fa fa-twitter-square"></i> Seed SNS</span></a>
-          </div>
-          <!-- Collect the nav links, forms, and other content for toggling -->
-          <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-              <ul class="nav navbar-nav navbar-right">
-                <li><a href="logout.php">ログアウト</a></li>
-              </ul>
-          </div>
-          <!-- /.navbar-collapse -->
-      </div>
-      <!-- /.container-fluid -->
-  </nav>
+  <?php include('nav.php'); ?>
 
   <div class="container">
     <div class="row">
@@ -276,6 +282,18 @@
           <p>
             <?php echo $tweet_each['tweet']; ?> <span class="name">（<?php echo $tweet_each['nick_name']; ?>）</span>
             [<a href="index.php?res=<?php echo $tweet_each['tweet_id']; ?>">Re</a>]
+            <?php if($tweet_each['like_count'] > 0) { ?>
+            <small><i class="fa fa-thumbs-up"></i>：<?php echo $tweet_each['like_count']; ?></small>
+            <?php } ?>
+            <?php if($tweet_each['like_flag'] == 0){
+              //いいねしていないので、いいね！を表示
+            ?>
+            <a href="like.php?tweet_id=<?php echo $tweet_each['tweet_id']; ?>"><small>いいね！</small></a>
+            <?php }else{
+              //いいねされてるので、取り消しを表示
+            ?>
+            <a href="unlike.php?tweet_id=<?php echo $tweet_each['tweet_id']; ?>"><small>いいねを取り消す</small></a>
+            <?php } ?>
           </p>
           <p class="day">
             <a href="view.php?tweet_id=<?php echo $tweet_each['tweet_id']; ?>">
